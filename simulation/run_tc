@@ -1,0 +1,68 @@
+#!/bin/bash
+# run simulation with tcname and mode
+# usage:
+# gui mode(super_scalar mode): 	    bash run_tc <tc_name>
+# gui mode(non-super_scalar mode): 	bash run_tc <tc_name> -gui -<tc_mode>
+# batch mode:	                    bash run_tc <tc_name> -batch -<tc_mode>
+#
+# <tc_mode>: super, scalar, step
+
+ 
+tcname=$1
+mode=$2
+tcmode=$3
+
+if [[ $3 = "-scalar" ]]; then
+    \rm -rf log_scalar/$tcname
+    mkdir -p log_scalar/$tcname
+    cd log_scalar/$tcname
+elif [[ $3 = "-step" ]]; then
+    \rm -rf log_step/$tcname
+    mkdir -p log_step/$tcname
+    cd log_step/$tcname
+else
+    \rm -rf log/$tcname
+    mkdir -p log/$tcname
+    cd log/$tcname
+fi
+
+ln -s ${PRJ_HOME}/simulation/*.cde .
+ln -s ${PRJ_HOME}/simulation/dram.* .
+ln -s ${PRJ_HOME}/simulation/drdtag.* .
+ln -s ${PRJ_HOME}/simulation/dwrtag.* .
+ln -s ${PRJ_HOME}/simulation/rerun.do .
+ln -s ${PRJ_HOME}/simulation/makefile .
+ln -s ${PRJ_HOME}/tests/$tcname/$tcname.s .
+ln -s ${PRJ_HOME}/tests/$tcname/default.lds .
+# load the initial data of LMRO and LMRW
+ln -s ${PRJ_HOME}/script/dnn_sim/data0622/ndma.lmro .
+ln -s ${PRJ_HOME}/script/dnn_sim/data0622/ndma.lmrw .
+# load VMU codegen code
+#ln -s ${PRJ_HOME}/codegen/hipu_trans.py .
+#ln -s ${PRJ_HOME}/codegen/generate.py .
+#ln -s ${PRJ_HOME}/codegen/hipu_trans.py .
+
+${PRJ_HOME}/tests/compile_tc $tcname.s
+
+if [[ $3 = "-scalar" ]]; then
+    cat ${PRJ_HOME}/simulation/force_scalar.do ${PRJ_HOME}/simulation/batch_run.do > batch_run.do
+    cat ${PRJ_HOME}/simulation/force_scalar.do ${PRJ_HOME}/simulation/run.do > run.do
+elif [[ $3 = "-step" ]]; then
+    cat ${PRJ_HOME}/simulation/force_step.do ${PRJ_HOME}/simulation/batch_run.do > batch_run.do
+    cat ${PRJ_HOME}/simulation/force_step.do ${PRJ_HOME}/simulation/run.do > run.do
+else
+    ln -s ${PRJ_HOME}/simulation/batch_run.do .
+    ln -s ${PRJ_HOME}/simulation/run.do .
+fi
+
+if [[ $2 = "-batch" ]]; then
+    ln -s ${PRJ_HOME}/simulation/batch_hpu.simv .
+    ln -s ${PRJ_HOME}/simulation/batch_hpu.simv.daidir .
+    cp -rf ${PRJ_HOME}/simulation/batch_hpu.simv.vdb .
+    make batch_run
+else
+    ln -s ${PRJ_HOME}/simulation/hpu.simv .
+    ln -s ${PRJ_HOME}/simulation/hpu.simv.daidir .
+    make run &
+fi
+

@@ -1,0 +1,6 @@
+urg -dbname mergedcov.vdb -report mergedcov_report -dir \
+log/*/batch_hpu_v.simv.vdb \
+log/*/batch_hpu_d.simv.vdb \
+log_step/*/batch_hpu_v.simv.vdb \
+log_scalar/*/batch_hpu_v.simv.vdb \
+-map hpu

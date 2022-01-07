@@ -1,0 +1,11 @@
+//${PRJ_HOME}/rtl/inc/hpu.svh
+//${PRJ_HOME}/rtl/inc/hpu_pip_csr.svh
+//${PRJ_HOME}/rtl/inc/hpu_pip_id.svh
+//${PRJ_HOME}/rtl/inc/hpu_pip_if.svh
+//${PRJ_HOME}/rtl/inc/hpu_pip_bkend.svh
+//${PRJ_HOME}/rtl/inc/hpu_cache.svh
+//${PRJ_HOME}/rtl/inc/hpu_pip_trig.svh
+//${PRJ_HOME}/rtl/inc/hpu_soc.svh
++incdir+${PRJ_HOME}/rtl/inc
+${PRJ_HOME}/rtl/inc/hpu_head_sim.sv
+${PRJ_HOME}/rtl/inc/dm_pkg.sv

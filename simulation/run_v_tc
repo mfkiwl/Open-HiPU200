@@ -1,0 +1,79 @@
+#!/bin/bash
+# run simulation with tcname and mode
+# usage:
+# gui mode(super_scalar mode): 	    bash run_v_tc <tc_name>
+# gui mode(non-super_scalar mode): 	bash run_v_tc <tc_name> -gui -<tc_mode>
+# batch mode:	                    bash run_v_tc <tc_name> -batch -<tc_mode>
+#
+# <tc_mode>: super, scalar, step
+
+ 
+tcname=$1
+mode=$2
+tcmode=$3
+
+if [[ $3 = "-scalar" ]]; then
+    \rm -rf log_scalar/$tcname
+    mkdir -p log_scalar/$tcname
+    cd log_scalar/$tcname
+elif [[ $3 = "-step" ]]; then
+    \rm -rf log_step/$tcname
+    mkdir -p log_step/$tcname
+    cd log_step/$tcname
+else
+    \rm -rf log/$tcname
+    mkdir -p log/$tcname
+    cd log/$tcname
+fi
+
+ln -s ${PRJ_HOME}/simulation/*.cde .
+ln -s ${PRJ_HOME}/simulation/makefile .
+
+# link the c code
+if [ -d ${PRJ_HOME}/tests/$tcname/c_code ]; then
+    cp -rf ${PRJ_HOME}/tests/$tcname/c_code .
+    cd c_code
+    make clean && make all
+    python3 trans_rom.py -i output/hpu_code.dat -o output/hpu_code.code
+    cd -
+    cp c_code/output/hpu_code.code ./ndma.code
+    cp c_code/output/hpu_code.asm ./simple.asm
+# link the assemble code
+else 
+    ln -s ${PRJ_HOME}/tests/$tcname/$tcname.s .
+    ln -s ${PRJ_HOME}/tests/$tcname/vmu_para.s .
+    ln -s ${PRJ_HOME}/tests/$tcname/default.lds .
+    ln -s ${PRJ_HOME}/tests/dmem.1
+    ${PRJ_HOME}/tests/compile_v_tc $tcname.s
+fi
+# load the initial data of LMRO and LMRW
+ln -s ${PRJ_HOME}/tests/$tcname/ndma.lmro .
+ln -s ${PRJ_HOME}/tests/$tcname/ndma.lmrw .
+# load VMU codegen code
+#ln -s ${PRJ_HOME}/codegen/hipu_trans.py .
+#ln -s ${PRJ_HOME}/codegen/generate.py .
+#ln -s ${PRJ_HOME}/codegen/hipu_trans.py .
+
+
+if [[ $3 = "-scalar" ]]; then
+    cat ${PRJ_HOME}/simulation/force_scalar.do ${PRJ_HOME}/simulation/batch_run_v.do > batch_run.do
+    cat ${PRJ_HOME}/simulation/force_scalar.do ${PRJ_HOME}/simulation/run_v.do > run.do
+elif [[ $3 = "-step" ]]; then
+    cat ${PRJ_HOME}/simulation/force_step.do ${PRJ_HOME}/simulation/batch_run_v.do > batch_run.do
+    cat ${PRJ_HOME}/simulation/force_step.do ${PRJ_HOME}/simulation/run_v.do > run.do
+else
+    ln -s ${PRJ_HOME}/simulation/batch_run_v.do batch_run.do
+    ln -s ${PRJ_HOME}/simulation/run_v.do run.do
+fi
+
+if [[ $2 = "-batch" ]]; then
+    ln -s ${PRJ_HOME}/simulation/batch_hpu_v.simv .
+    ln -s ${PRJ_HOME}/simulation/batch_hpu_v.simv.daidir .
+    cp -rf ${PRJ_HOME}/simulation/batch_hpu_v.simv.vdb .
+    make batch_run_v
+else
+    ln -s ${PRJ_HOME}/simulation/hpu_v.simv .
+    ln -s ${PRJ_HOME}/simulation/hpu_v.simv.daidir .
+    make run_v &
+fi
+

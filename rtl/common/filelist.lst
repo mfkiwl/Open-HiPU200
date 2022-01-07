@@ -1,0 +1,5 @@
+${PRJ_HOME}/rtl/common/sync_fifo.sv
+${PRJ_HOME}/rtl/common/reg_dly.v
+${PRJ_HOME}/rtl/common/sig_sync.sv
+${PRJ_HOME}/rtl/common/dec_bin_to_onehot.sv
+

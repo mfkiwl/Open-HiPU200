@@ -1,0 +1,11 @@
+-f ${PRJ_HOME}/rtl/src/hpu/hpu_pipeline/filelist.lst
+${PRJ_HOME}/rtl/src/hpu/hpu_pipeline.sv
+-f ${PRJ_HOME}/rtl/src/hpu/hpu_cache/filelist.lst
+${PRJ_HOME}/rtl/src/hpu/hpu_cache.sv
+-f ${PRJ_HOME}/rtl/src/hpu/hpu_dm/filelist.lst
+${PRJ_HOME}/rtl/src/hpu/hpu_dm.sv
+${PRJ_HOME}/rtl/src/hpu/hpu_clint.sv
+${PRJ_HOME}/rtl/src/hpu/hpu_dtcm.sv
+${PRJ_HOME}/rtl/src/hpu/hpu_lmrw.sv
+${PRJ_HOME}/rtl/src/hpu/hpu_lmro.sv
+${PRJ_HOME}/rtl/src/hpu/hpu_lcarb.sv

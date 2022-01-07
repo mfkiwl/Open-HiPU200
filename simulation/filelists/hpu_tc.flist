@@ -1,0 +1,2 @@
+${PRJ_HOME}/rtl/tb/instrset_pkg.sv
+${PRJ_HOME}/rtl/tb/instr_gen.sv

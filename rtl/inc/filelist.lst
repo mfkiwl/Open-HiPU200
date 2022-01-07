@@ -1,0 +1,2 @@
+${PRJ_HOME}/rtl/inc/hpu_head.sv
+${PRJ_HOME}/rtl/inc/dm_pkg.sv

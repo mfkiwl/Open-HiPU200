@@ -1,0 +1,4 @@
+-f ${PRJ_HOME}/rtl/inc/filelist.lst
+-f ${PRJ_HOME}/rtl/common/filelist.lst
+-f ${PRJ_HOME}/rtl/ip/filelist.lst
+-f ${PRJ_HOME}/rtl/src/filelist_hpu.lst

@@ -1,0 +1,49 @@
+#!/bin/bash
+# run simulation with tcname and mode
+# usage:
+# gui mode: 	bash run_debug_tc <tc_name>
+# batch mode:	bash run_debug_tc <tc_name> -batch
+
+ 
+tcname=$1
+mode=$2
+
+\rm -rf log/$tcname
+mkdir -p log/$tcname
+cp ../tests/debug/$tcname.src ./test.src
+cp ../tests/debug/$tcname.src log/$tcname/$tcname.src
+
+
+if [[ $2 = "-batch" ]]; then
+    make batch_debug 
+else
+    make debug 
+fi
+
+cd log/$tcname
+ln -s ${PRJ_HOME}/simulation/*.cde .
+ln -s ${PRJ_HOME}/simulation/dram.* .
+ln -s ${PRJ_HOME}/simulation/drdtag.* .
+ln -s ${PRJ_HOME}/simulation/dwrtag.* .
+ln -s ${PRJ_HOME}/simulation/rerun.do .
+ln -s ${PRJ_HOME}/simulation/makefile .
+ln -s ${PRJ_HOME}/simulation/test.src .
+ln -s ${PRJ_HOME}/tests/08_ldst/08_ldst.s .
+ln -s ${PRJ_HOME}/tests/08_ldst/default.lds .
+${PRJ_HOME}/tests/compile_tc 08_ldst.s
+
+if [[ $2 = "-batch" ]]; then
+    cp ${PRJ_HOME}/simulation/batch_run.do .
+    sed -i 's/hpu_tb/hpu_debug_tb/g' batch_run.do
+    ln -s ${PRJ_HOME}/simulation/batch_hpu_d.simv .
+    ln -s ${PRJ_HOME}/simulation/batch_hpu_d.simv.daidir .
+    cp -rf ${PRJ_HOME}/simulation/batch_hpu_d.simv.vdb .
+    ./batch_hpu_d.simv -cm line+branch+cond+tgl+fsm+assert -cm_dir batch_hpu_d.simv.vdb -ucli -do batch_run.do -l run.log
+else
+    cp ${PRJ_HOME}/simulation/run.do .
+    sed -i 's/hpu_tb/hpu_debug_tb/g' run.do
+    ln -s ${PRJ_HOME}/simulation/hpu_d.simv .
+    ln -s ${PRJ_HOME}/simulation/hpu_d.simv.daidir .
+    ./hpu_d.simv +vcs+initreg+0 -gui -do run.do -l run.log &
+fi
+

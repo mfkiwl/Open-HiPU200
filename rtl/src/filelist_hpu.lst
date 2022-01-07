@@ -1,0 +1,2 @@
+-f ${PRJ_HOME}/rtl/src/hpu/filelist.lst
+${PRJ_HOME}/rtl/src/hpu.sv

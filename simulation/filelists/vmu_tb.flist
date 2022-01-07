@@ -1,0 +1,2 @@
+${PRJ_HOME}/rtl/tb/vmu_tb.sv
+${PRJ_HOME}/rtl/tb/sim_ndma.sv

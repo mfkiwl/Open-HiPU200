@@ -1,0 +1,31 @@
+#!/bin/bash
+# run simulation with tcname and mode
+# usage:
+# gui mode: 	bash run_tc <tc_name>
+# batch mode:	bash run_tc <tc_name> -batch
+
+ 
+tcname=$1
+mode=$2
+\rm -rf log/$tcname
+mkdir -p log/$tcname
+cd log/$tcname
+ln -s ${PRJ_HOME}/simulation/*.cde .
+ln -s ${PRJ_HOME}/simulation/l2ram.* .
+ln -s ${PRJ_HOME}/simulation/rerun.do .
+ln -s ${PRJ_HOME}/simulation/makefile .
+ln -s ${PRJ_HOME}/tests/$tcname/$tcname.s .
+ln -s ${PRJ_HOME}/tests/$tcname/default.lds .
+${PRJ_HOME}/tests/compile_l2_tc $tcname.s
+if [[ $2 = "-batch" ]]; then
+    ln -s ${PRJ_HOME}/simulation/batch_run_l2.do batch_run.do
+    ln -s ${PRJ_HOME}/simulation/batch_hpu.simv .
+    ln -s ${PRJ_HOME}/simulation/batch_hpu.simv.daidir .
+    make batch_run
+else
+    ln -s ${PRJ_HOME}/simulation/run_l2.do run.do
+    ln -s ${PRJ_HOME}/simulation/hpu.simv .
+    ln -s ${PRJ_HOME}/simulation/hpu.simv.daidir .
+    make run &
+fi
+

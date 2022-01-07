@@ -1,0 +1,2 @@
+${PRJ_HOME}/rtl/tb/sim_jtag.sv
+${PRJ_HOME}/rtl/tb/hpu_debug_tb.sv
